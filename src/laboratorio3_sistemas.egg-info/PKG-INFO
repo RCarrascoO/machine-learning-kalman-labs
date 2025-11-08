@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: laboratorio3-sistemas
+Version: 1.0.0
+Summary: Laboratorio #3 INF0157 - Clustering, Regression, Signal Filtering & Visualization
+Author-email: Renato Carrasco <renato.carrasco@estudiante.cl>
+Requires-Python: >=3.8
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: scikit-learn>=1.0.0
+Requires-Dist: matplotlib>=3.4.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: scipy>=1.7.0
+Provides-Extra: dev
+Requires-Dist: jupyter>=1.0.0; extra == "dev"
+Requires-Dist: jupyterlab>=3.0.0; extra == "dev"
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: seaborn>=0.11.0; extra == "dev"
