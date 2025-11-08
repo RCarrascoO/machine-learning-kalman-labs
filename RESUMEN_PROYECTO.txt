@@ -316,5 +316,5 @@ Archivos de configuración:
 
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║  ¡PROYECTO LISTO! Fecha entrega: 19 de Noviembre                         ║
-║  Autor: Alberto Caro - INF0157 Sistemas                                  ║
+║  Autor: Renato Carrasco - INF0157 Sistemas                               ║
 ╚═══════════════════════════════════════════════════════════════════════════╝

@@ -1,7 +1,7 @@
 # Laboratorio #3 - INF0157
 ## Clustering, Regresión Lineal y Filtros
 
-**Autor:** Alberto Caro  
+**Autor:** Renato Carrasco  
 **Curso:** INF0157 - Sistemas  
 **Fecha de entrega:** 19 de Noviembre
 
@@ -306,7 +306,7 @@ El proyecto sigue principios de arquitectura limpia:
 
 ## 👤 Autor
 
-**Alberto Caro** - INF0157 Sistemas
+**Renato Carrasco** - INF0157 Sistemas
 
 ---
 
