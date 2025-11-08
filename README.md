@@ -1,26 +1,28 @@
 # Laboratorio #3 - INF0157
-## Clustering, Regresión Lineal y Filtros
+## Clustering, Regresión Lineal, Visualización 3D y Filtros
 
 **Autor:** Renato Carrasco  
 **Curso:** INF0157 - Sistemas  
-**Fecha de entrega:** 19 de Noviembre
+**Fecha de entrega:** 19 de Noviembre, 09:00 - 16:00
 
 ---
 
 ## 📋 Descripción del Proyecto
 
-Este proyecto implementa algoritmos de clustering (KMeans y MeanShift), regresión lineal, cálculo de similitud mediante distancia del coseno, y filtros (Kalman y Complementario) utilizando **arquitectura limpia** en Python.
+Este proyecto implementa todos los puntos de la rúbrica del Laboratorio #3:
 
-### 🎯 Objetivos
+### 🎯 Contenido del Laboratorio
 
-- **Parte A:** Aplicar KMeans de scikit-learn y analizar resultados
-- **Parte B:** Aplicar MeanShift de scikit-learn y analizar resultados
-- **Parte C:** 
-  - Regresión lineal para predicción de peso
-  - Distancia del coseno para similitud
-  - Visualización 3D
-  - Filtro de Kalman
-  - Filtro complementario
+1. **KMeans (2 puntos)** - Clustering con KMeans y visualización
+2. **MeanShift (2 puntos)** - Clustering con MeanShift y visualización
+3. **Regresión Lineal (1 punto)** - Predicción de pesos y cálculo de RSS
+4. **Distancia del Coseno (2 puntos)** - Similitud entre vectores con ángulos
+5. **Visualización 3D (1 punto)** - Centroide 3D en puntos_3d.npy
+6. **KMeans en Iris (2 puntos)** - Clustering del dataset Iris
+7. **Filtro de Kalman (3 puntos)** - Filtrado de trayectorias
+8. **Filtro Complementario (1 punto)** - Fusión de sensores
+
+**Total: 14 puntos brutos**
 
 ---
 
@@ -28,29 +30,35 @@ Este proyecto implementa algoritmos de clustering (KMeans y MeanShift), regresi�
 
 ```
 Caro-Proyecto3-Sistemas/
-├── src/                           # Código fuente principal
-│   ├── __init__.py
-│   ├── data_loader.py            # Carga de datos (.npy)
-│   ├── clustering/
-│   │   ├── kmeans_model.py       # Modelo KMeans
-│   │   └── meanshift_model.py    # Modelo MeanShift
+├── src/                              # Código fuente modular
+│   ├── data_loader.py               # Carga de datos .npy
+│   ├── clustering/                  # Modelos de clustering
+│   │   ├── kmeans_model.py
+│   │   └── meanshift_model.py
 │   ├── regression/
-│   │   └── linear_regression.py  # Regresión lineal
+│   │   └── linear_regression.py
 │   ├── similarity/
-│   │   └── cosine_distance.py    # Distancia del coseno
+│   │   └── cosine_distance.py
 │   ├── filters/
-│   │   ├── kalman_filter.py      # Filtro de Kalman
-│   │   └── complementary_filter.py # Filtro complementario
+│   │   ├── kalman_filter.py
+│   │   └── complementary_filter.py
 │   └── utils/
-│       └── visualization.py      # Visualizaciones
-├── notebooks/                     # Notebooks ejecutables
-│   ├── parte_a_kmeans.ipynb
-│   ├── parte_b_meanshift.ipynb
-│   └── parte_c_adicionales.ipynb
-├── tests/                         # Tests unitarios
-├── config.py                      # Configuración centralizada
-├── requirements.txt               # Dependencias
-└── README.md                      # Este archivo
+│       └── visualization.py
+├── notebooks/                        # Notebooks del laboratorio
+│   ├── parte_a_kmeans.ipynb         # Punto 1: KMeans (2 pts)
+│   ├── parte_b_meanshift.ipynb      # Punto 2: MeanShift (2 pts)
+│   ├── parte_c_adicionales.ipynb    # Puntos 3-5, 7-8 (8 pts)
+│   └── parte_6_kmeans_iris.ipynb    # Punto 6: Iris (2 pts)
+├── KMeans/                           # Datos para KMeans
+│   ├── A.npy
+│   └── _.npy
+├── MeanShift/                        # Datos para MeanShift
+│   ├── X.npy
+│   └── _ .npy
+├── puntos_3d.npy                     # Datos para visualización 3D
+├── config.py                         # Configuración centralizada
+├── requirements.txt                  # Dependencias
+└── README.md
 ```
 
 ---
@@ -95,51 +103,31 @@ pip install -r requirements.txt
 
 ---
 
-## 📖 Uso
+## 📖 Ejecución del Laboratorio
 
-### Cargar Datos
+### Ejecutar Jupyter Notebooks
 
-```python
-from src.data_loader import DataLoader
+```bash
+# Activar ambiente virtual
+.venv\Scripts\Activate.ps1
 
-# Cargar datos de KMeans
-A, labels = DataLoader.load_kmeans_data()
-
-# Cargar datos de MeanShift
-X, labels = DataLoader.load_meanshift_data()
-
-# Cargar puntos 3D
-df = DataLoader.load_3d_points()
+# Iniciar Jupyter
+jupyter notebook notebooks/
 ```
 
-### KMeans
+### Notebooks del Laboratorio
 
-```python
-from src.clustering.kmeans_model import KMeansModel
+Los notebooks deben ejecutarse en orden para completar todos los puntos de la rúbrica:
 
-# Crear y entrenar modelo
-model = KMeansModel(n_clusters=3)
-model.fit(data)
-
-# Obtener resultados
-centroids = model.get_centroids()
-labels = model.get_labels()
-predictions = model.predict(test_data)
-```
-
-### MeanShift
-
-```python
-from src.clustering.meanshift_model import MeanShiftModel
-
-# Crear y entrenar modelo
-model = MeanShiftModel()
-model.fit(data)
-
-# Obtener resultados
-centroids = model.get_centroids()
-labels = model.get_labels()
-```
+1. **`parte_a_kmeans.ipynb`** → Punto 1: KMeans (2 puntos)
+2. **`parte_b_meanshift.ipynb`** → Punto 2: MeanShift (2 puntos)
+3. **`parte_c_adicionales.ipynb`** → Puntos 3-5, 7-8 (8 puntos)
+   - Sección 3: Regresión Lineal con RSS
+   - Sección 4: Distancia del Coseno con ángulos
+   - Sección 5: Visualización 3D con centroide
+   - Sección 7: Filtro de Kalman
+   - Sección 8: Filtro Complementario
+4. **`parte_6_kmeans_iris.ipynb`** → Punto 6: KMeans en Iris (2 puntos)
 
 ### Regresión Lineal
 
