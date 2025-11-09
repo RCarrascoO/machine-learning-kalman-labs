@@ -33,6 +33,7 @@ KMEANS_CONFIG = {
 MEANSHIFT_CONFIG = {
     "bandwidth": "scott",
     "cluster_all": True,
+    "quantile": 0.2,  # Quantile para estimate_bandwidth (0.2 detecta 4 clusters)
 }
 
 # Configuración de visualización

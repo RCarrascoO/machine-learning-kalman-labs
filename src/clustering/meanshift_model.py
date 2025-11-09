@@ -11,19 +11,22 @@ import config
 class MeanShiftModel:
     """Modelo de MeanShift personalizado."""
     
-    def __init__(self, bandwidth=None, cluster_all=None):
+    def __init__(self, bandwidth=None, cluster_all=None, quantile=None):
         """
         Inicializa el modelo de MeanShift.
         
         Args:
             bandwidth (float o str): Ancho de banda para el kernel
             cluster_all (bool): Si se deben agrupar todos los puntos
+            quantile (float): Quantile para estimate_bandwidth (cuando bandwidth="scott")
         """
         bandwidth = bandwidth or config.MEANSHIFT_CONFIG["bandwidth"]
         cluster_all = cluster_all or config.MEANSHIFT_CONFIG["cluster_all"]
+        quantile = quantile if quantile is not None else config.MEANSHIFT_CONFIG.get("quantile", 0.2)
         
         self.bandwidth = bandwidth
         self.cluster_all = cluster_all
+        self.quantile = quantile
         self.model = None
         self.labels = None
         self.centroids = None
@@ -41,7 +44,7 @@ class MeanShiftModel:
         """
         # Estimar ancho de banda si es necesario
         if self.bandwidth == "scott":
-            bandwidth = estimate_bandwidth(X, quantile=0.3)
+            bandwidth = estimate_bandwidth(X, quantile=self.quantile)
         else:
             bandwidth = self.bandwidth
         
@@ -100,6 +103,7 @@ class MeanShiftModel:
             "n_clusters": len(np.unique(self.labels)) if self.labels is not None else None,
             "centroids_shape": self.centroids.shape if self.centroids is not None else None,
             "bandwidth": self.bandwidth,
+            "quantile": self.quantile if self.bandwidth == "scott" else None,
             "cluster_all": self.cluster_all,
         }
         return info
