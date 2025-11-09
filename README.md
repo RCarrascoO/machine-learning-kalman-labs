@@ -45,10 +45,8 @@ Caro-Proyecto3-Sistemas/
 │   └── utils/
 │       └── visualization.py
 ├── notebooks/                        # Notebooks del laboratorio
-│   ├── parte_a_kmeans.ipynb         # Punto 1: KMeans (2 pts)
-│   ├── parte_b_meanshift.ipynb      # Punto 2: MeanShift (2 pts)
-│   ├── parte_c_adicionales.ipynb    # Puntos 3-5, 7-8 (8 pts)
-│   └── parte_6_kmeans_iris.ipynb    # Punto 6: Iris (2 pts)
+│   ├── parte_a.ipynb                # Parte A: Puntos 1, 2, 3, 4 (7 pts)
+│   └── parte_b.ipynb                # Parte B: Puntos 5, 6, 7, 8 (7 pts)
 ├── KMeans/                           # Datos para KMeans
 │   ├── A.npy
 │   └── _.npy
@@ -117,17 +115,19 @@ jupyter notebook notebooks/
 
 ### Notebooks del Laboratorio
 
-Los notebooks deben ejecutarse en orden para completar todos los puntos de la rúbrica:
+El laboratorio está dividido en 2 notebooks principales:
 
-1. **`parte_a_kmeans.ipynb`** → Punto 1: KMeans (2 puntos)
-2. **`parte_b_meanshift.ipynb`** → Punto 2: MeanShift (2 puntos)
-3. **`parte_c_adicionales.ipynb`** → Puntos 3-5, 7-8 (8 puntos)
-   - Sección 3: Regresión Lineal con RSS
-   - Sección 4: Distancia del Coseno con ángulos
-   - Sección 5: Visualización 3D con centroide
-   - Sección 7: Filtro de Kalman
-   - Sección 8: Filtro Complementario
-4. **`parte_6_kmeans_iris.ipynb`** → Punto 6: KMeans en Iris (2 puntos)
+1. **`parte_a.ipynb`** → Parte A: Puntos 1, 2, 3, 4 (7 puntos)
+   - Punto 1: KMeans Clustering (2 pts)
+   - Punto 2: MeanShift Clustering (2 pts)
+   - Punto 3: Regresión Lineal con RSS (1 pt)
+   - Punto 4: Distancia del Coseno con ángulos (2 pts)
+
+2. **`parte_b.ipynb`** → Parte B: Puntos 5, 6, 7, 8 (7 puntos)
+   - Punto 5: Visualización 3D con centroide (1 pt)
+   - Punto 6: KMeans en dataset Iris (2 pts)
+   - Punto 7: Filtro de Kalman (3 pts)
+   - Punto 8: Filtro Complementario (1 pt)
 
 ### Regresión Lineal
 
