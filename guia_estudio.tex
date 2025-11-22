@@ -1,0 +1,288 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{geometry}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Guía de Estudio Detallada: Proyecto de Sistemas Inteligentes\\
+\large Análisis Teórico y Desglose de Código}
+\author{Laboratorio \#3 - INFO1157}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introducción}
+Este documento proporciona una guía exhaustiva del proyecto, combinando conceptos teóricos con un análisis detallado del código fuente. Se explica cada archivo, clase y método implementado.
+
+\section{Análisis de Código Fuente}
+
+\subsection{1. Configuración Global (\texttt{config.py})}
+Este archivo centraliza todas las constantes y rutas del proyecto para mantener el código ordenado y fácil de modificar.
+
+\subsubsection{Rutas y Directorios}
+Se definen las rutas base utilizando \texttt{pathlib} para asegurar compatibilidad entre sistemas operativos (Windows/Linux).
+\begin{lstlisting}[language=Python]
+import os
+from pathlib import Path
+
+# Rutas principales
+PROJECT_ROOT = Path(__file__).parent.absolute()
+DATA_DIR = PROJECT_ROOT / "data"
+RESULTS_DIR = PROJECT_ROOT / "results"
+NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
+\end{lstlisting}
+
+\subsubsection{Configuración de Algoritmos}
+Se definen diccionarios con los hiperparámetros por defecto para los algoritmos. Esto permite cambiar la configuración en un solo lugar sin tocar la lógica de los modelos.
+\begin{lstlisting}[language=Python]
+# Configuración de KMeans
+KMEANS_CONFIG = {
+    "n_clusters": 3,
+    "random_state": 42,
+    "n_init": 10,
+    "max_iter": 300,
+}
+
+# Configuración de MeanShift
+MEANSHIFT_CONFIG = {
+    "bandwidth": "scott",
+    "cluster_all": True,
+    "quantile": 0.2,
+}
+\end{lstlisting}
+
+\newpage
+\subsection{2. Carga de Datos (\texttt{src/data\_loader.py})}
+Este módulo se encarga de leer los archivos crudos (formato \texttt{.npy}) y entregarlos en formatos útiles (DataFrames o Arrays).
+
+\subsubsection{Clase DataLoader}
+Utiliza métodos estáticos (\texttt{@staticmethod}) para no necesitar instanciar la clase.
+
+\textbf{Carga de Puntos 3D:}
+Lee el archivo \texttt{puntos\_3d.npy} y lo convierte inmediatamente a un DataFrame de Pandas con columnas x, y, z para facilitar su visualización.
+\begin{lstlisting}[language=Python]
+    @staticmethod
+    def load_3d_points():
+        path = config.DATA_FILES["puntos_3d"]
+        data = np.load(path)
+        df = pd.DataFrame(data, columns=['x', 'y', 'z'])
+        return df
+\end{lstlisting}
+
+\textbf{Información de Datos:}
+Calcula estadísticas básicas de los datos cargados, como el número total de puntos y la distribución por clases.
+\begin{lstlisting}[language=Python]
+    @staticmethod
+    def get_data_info(data, labels):
+        unique_labels = np.unique(labels)
+        info = {
+            "total_points": len(data),
+            "total_classes": len(unique_labels),
+            "samples_per_class": {
+                cls: np.sum(labels == cls) for cls in unique_labels
+            }
+        }
+        return info
+\end{lstlisting}
+
+\newpage
+\subsection{3. Modelo K-Means (\texttt{src/clustering/kmeans\_model.py})}
+Implementa el algoritmo de agrupamiento K-Means.
+
+\subsubsection{Inicialización (\texttt{\_\_init\_\_})}
+El constructor acepta parámetros opcionales. Si no se entregan, toma los valores por defecto de \texttt{config.py}.
+\begin{lstlisting}[language=Python]
+class KMeansModel:
+    def __init__(self, n_clusters=None, random_state=None, ...):
+        # Usar valores de config si no se proporcionan
+        n_clusters = n_clusters or config.KMEANS_CONFIG["n_clusters"]
+        
+        self.model = SklearnKMeans(
+            n_clusters=n_clusters,
+            ...
+        )
+\end{lstlisting}
+
+\subsubsection{Entrenamiento (\texttt{fit})}
+Ajusta el modelo a los datos y guarda los resultados importantes (etiquetas, centroides, inercia) como atributos de la clase para fácil acceso.
+\begin{lstlisting}[language=Python]
+    def fit(self, X):
+        self.model.fit(X)
+        self.labels = self.model.labels_
+        self.centroids = self.model.cluster_centers_
+        self.inertia = self.model.inertia_
+        return self
+\end{lstlisting}
+
+\newpage
+\subsection{4. Modelo MeanShift (\texttt{src/clustering/meanshift\_model.py})}
+Implementa MeanShift, un algoritmo que no requiere saber el número de clusters de antemano.
+
+\subsubsection{Estimación de Bandwidth}
+Una parte crítica de MeanShift es el "ancho de banda". Si se configura como "scott", el método \texttt{fit} calcula automáticamente este valor basándose en la densidad de los datos.
+\begin{lstlisting}[language=Python]
+    def fit(self, X):
+        # Estimar ancho de banda si es necesario
+        if self.bandwidth == "scott":
+            bandwidth = estimate_bandwidth(X, quantile=self.quantile)
+        else:
+            bandwidth = self.bandwidth
+        
+        self.model = SklearnMeanShift(bandwidth=bandwidth, ...)
+        self.model.fit(X)
+\end{lstlisting}
+
+\newpage
+\subsection{5. Regresión Lineal (\texttt{src/regression/linear\_regression.py})}
+Modelo para predecir una variable continua (peso) a partir de otra (altura).
+
+\subsubsection{Predicción y Validación}
+El método \texttt{predict} verifica primero si el modelo ha sido entrenado (\texttt{\_is\_fitted}) para evitar errores.
+\begin{lstlisting}[language=Python]
+    def predict(self, X):
+        if not self._is_fitted:
+            raise ValueError("El modelo debe ser entrenado primero")
+        
+        self.predictions = self.model.predict(X)
+        return self.predictions
+\end{lstlisting}
+
+\subsubsection{Obtención de la Ecuación}
+Este método auxiliar devuelve la fórmula de la recta $y = mx + b$ en formato legible, útil para visualización.
+\begin{lstlisting}[language=Python]
+    def get_equation(self):
+        m, b = self.get_coefficients()
+        return f"Peso = {m:.4f} x Altura + {b:.4f}"
+\end{lstlisting}
+
+\newpage
+\subsection{6. Similitud Coseno (\texttt{src/similarity/cosine\_distance.py})}
+Calcula qué tan similares son dos vectores basándose en su ángulo.
+
+\subsubsection{Cálculo Matemático}
+Implementa la fórmula del coseno manualmente usando NumPy. Se añaden protecciones contra división por cero.
+\begin{lstlisting}[language=Python]
+    @staticmethod
+    def cosine_distance(vector_a, vector_b):
+        # Producto punto
+        dot_product = np.dot(a, b)
+        # Normas (magnitudes)
+        norm_a = np.linalg.norm(a)
+        norm_b = np.linalg.norm(b)
+        
+        if norm_a == 0 or norm_b == 0:
+            return 0.0
+            
+        return dot_product / (norm_a * norm_b)
+\end{lstlisting}
+
+\subsubsection{Conversión de Ángulos}
+Métodos auxiliares para interpretar el resultado en grados, que es más intuitivo para humanos que radianes o el valor del coseno puro.
+\begin{lstlisting}[language=Python]
+    @staticmethod
+    def angle_from_cosine_degrees(cos_theta):
+        # Asegura que el valor esté en [-1, 1]
+        cos_theta = np.clip(cos_theta, -1.0, 1.0)
+        radians = np.arccos(cos_theta)
+        return np.degrees(radians)
+\end{lstlisting}
+
+\newpage
+\subsection{7. Filtro de Kalman (\texttt{src/filters/kalman\_filter.py})}
+Estima el estado de un sistema dinámico lineal.
+
+\subsubsection{Inicialización de Matrices}
+Define las matrices clave del filtro: Transición ($F$), Medición ($H$), Covarianza ($P$) y Ruido del Proceso ($Q$).
+\begin{lstlisting}[language=Python]
+    def __init__(self, dt=0.1, ...):
+        # Matriz de transición de estado (F)
+        # x = x + v*dt
+        # v = v
+        self.F = np.array([[1, dt], [0, 1]])
+        
+        # Matriz de medición (H)
+        # Solo medimos posición (1, 0)
+        self.H = np.array([[1, 0]])
+\end{lstlisting}
+
+\subsubsection{Ciclo Predecir-Actualizar}
+El método \texttt{filter} itera sobre una lista de mediciones, ejecutando el ciclo de Kalman en cada paso.
+\begin{lstlisting}[language=Python]
+    def filter(self, measurements):
+        estimates = []
+        for z in measurements:
+            self.predict()  # Proyectar estado al futuro
+            self.update(z)  # Corregir con nueva medición
+            estimates.append(self.x[0, 0])
+        return np.array(estimates)
+\end{lstlisting}
+
+\newpage
+\subsection{8. Filtro Complementario (\texttt{src/filters/complementary\_filter.py})}
+Fusiona señales de alta y baja frecuencia.
+
+\subsubsection{Fusión de Señales}
+Aplica la fórmula clásica del filtro complementario. $\alpha$ (alpha) controla cuánto confiamos en cada sensor.
+\begin{lstlisting}[language=Python]
+    def filter(self, measurement_noisy, measurement_integrated):
+        # alpha * (dato ruidoso) + (1-alpha) * (dato integrado)
+        estimate = (self.alpha * measurement_noisy + 
+                   (1 - self.alpha) * measurement_integrated)
+        
+        self.position = estimate
+        return estimate
+\end{lstlisting}
+
+\subsubsection{Búsqueda de Alpha Óptimo}
+Un método estático que prueba múltiples valores de $\alpha$ para encontrar cuál minimiza el error respecto a una referencia conocida.
+\begin{lstlisting}[language=Python]
+    @staticmethod
+    def find_optimal_alpha(noisy, integrated, reference):
+        alphas = np.linspace(0, 1, 21)
+        errors = []
+        
+        for alpha in alphas:
+            cf = ComplementaryFilter(alpha=alpha)
+            # ... calcular error ...
+            errors.append(error)
+        
+        return alphas[np.argmin(errors)]
+\end{lstlisting}
+
+\end{document}
