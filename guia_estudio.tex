@@ -285,4 +285,129 @@ Un método estático que prueba múltiples valores de $\alpha$ para encontrar cu
         return alphas[np.argmin(errors)]
 \end{lstlisting}
 
+\newpage
+\section{Notebooks de Jupyter}
+Esta sección detalla el contenido y propósito de los notebooks interactivos utilizados para ejecutar y visualizar los algoritmos.
+
+\subsection{Notebook A: Clustering y Regresión (\texttt{notebooks/parte\_a.ipynb})}
+Este notebook cubre la primera parte del laboratorio, enfocándose en algoritmos de agrupamiento y regresión lineal.
+
+\subsubsection{Estructura del Notebook}
+\begin{itemize}
+    \item \textbf{Punto 1: KMeans Clustering}
+    \begin{itemize}
+        \item Carga los datos de entrenamiento (\texttt{A.npy}).
+        \item Aplica el modelo \texttt{KMeansModel} para encontrar 3 clusters.
+        \item Visualiza los datos originales y los clusters resultantes con sus centroides.
+    \end{itemize}
+    \item \textbf{Punto 2: MeanShift Clustering}
+    \begin{itemize}
+        \item Carga los datos (\texttt{X.npy}).
+        \item Utiliza \texttt{MeanShiftModel} para detectar automáticamente el número de clusters.
+        \item Compara los resultados con KMeans.
+    \end{itemize}
+    \item \textbf{Punto 3: Regresión Lineal}
+    \begin{itemize}
+        \item Entrena un modelo para predecir pesos basados en alturas.
+        \item Calcula el error cuadrático medio (MSE) y visualiza la recta de regresión.
+    \end{itemize}
+    \item \textbf{Punto 4: Distancia del Coseno}
+    \begin{itemize}
+        \item Calcula la similitud entre varios vectores de prueba.
+        \item Muestra los ángulos resultantes para interpretar la similitud.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Código Clave (KMeans)}
+\begin{lstlisting}[language=Python]
+# Cargar datos
+A, labels = DataLoader.load_kmeans_data()
+
+# Inicializar y entrenar modelo
+kmeans = KMeansModel(n_clusters=3)
+kmeans.fit(A)
+
+# Obtener centroides
+centroids = kmeans.get_centroids()
+\end{lstlisting}
+
+\subsection{Notebook B: Visualización 3D y Filtros (\texttt{notebooks/parte\_b.ipynb})}
+Este notebook aborda la visualización avanzada y los algoritmos de filtrado.
+
+\subsubsection{Estructura del Notebook}
+\begin{itemize}
+    \item \textbf{Punto 5: Visualización 3D}
+    \begin{itemize}
+        \item Carga una nube de puntos 3D (\texttt{puntos\_3d.npy}).
+        \item Calcula el centroide geométrico.
+        \item Genera un gráfico interactivo 3D mostrando los puntos y el centroide.
+    \end{itemize}
+    \item \textbf{Punto 6: Dataset Iris}
+    \begin{itemize}
+        \item Carga el dataset Iris.
+        \item Aplica clustering y evalúa el rendimiento con métricas ARI y Silhouette.
+    \end{itemize}
+    \item \textbf{Punto 7: Filtro de Kalman}
+    \begin{itemize}
+        \item Simula una trayectoria con ruido.
+        \item Aplica el filtro de Kalman para suavizar la trayectoria y estimar la posición real.
+    \end{itemize}
+    \item \textbf{Punto 8: Filtro Complementario}
+    \begin{itemize}
+        \item Simula datos de sensores (acelerómetro y giroscopio).
+        \item Fusiona las señales para obtener una estimación de ángulo más estable.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Código Clave (Visualización 3D)}
+\begin{lstlisting}[language=Python]
+# Cargar puntos
+puntos_3d = np.load('../puntos_3d.npy')
+
+# Calcular centroide
+centroid = np.mean(puntos_3d, axis=0)
+
+# Graficar
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(puntos_3d[:,0], puntos_3d[:,1], puntos_3d[:,2])
+ax.scatter(centroid[0], centroid[1], centroid[2], c='red', s=100)
+\end{lstlisting}
+
+\newpage
+\section{Apéndice: Código Fuente Completo}
+A continuación se presenta el código fuente completo de todos los módulos implementados en el proyecto, con una breve descripción de su propósito.
+
+\subsection{Configuración (config.py)}
+Define las constantes globales, rutas de archivos y parámetros de configuración por defecto para todos los algoritmos.
+\lstinputlisting[language=Python]{src/../config.py}
+
+\subsection{Cargador de Datos (src/data\_loader.py)}
+Clase utilitaria encargada de cargar archivos \texttt{.npy} y transformarlos en estructuras de datos manejables como DataFrames de Pandas.
+\lstinputlisting[language=Python]{src/data_loader.py}
+
+\subsection{K-Means Model (src/clustering/kmeans\_model.py)}
+Implementación orientada a objetos del algoritmo K-Means, encapsulando la inicialización, entrenamiento y predicción de clusters.
+\lstinputlisting[language=Python]{src/clustering/kmeans_model.py}
+
+\subsection{MeanShift Model (src/clustering/meanshift\_model.py)}
+Implementación del algoritmo MeanShift que permite la detección automática de clusters basada en densidad, incluyendo la estimación de ancho de banda.
+\lstinputlisting[language=Python]{src/clustering/meanshift_model.py}
+
+\subsection{Regresión Lineal (src/regression/linear\_regression.py)}
+Modelo de regresión lineal simple para predecir variables continuas, incluyendo métodos para evaluación de métricas (MSE, R2).
+\lstinputlisting[language=Python]{src/regression/linear_regression.py}
+
+\subsection{Distancia Coseno (src/similarity/cosine\_distance.py)}
+Módulo con métodos estáticos para calcular la similitud coseno entre vectores y convertir los resultados a ángulos en grados.
+\lstinputlisting[language=Python]{src/similarity/cosine_distance.py}
+
+\subsection{Filtro de Kalman (src/filters/kalman\_filter.py)}
+Implementación de un filtro de Kalman unidimensional estándar, con métodos separados para las fases de predicción y actualización.
+\lstinputlisting[language=Python]{src/filters/kalman_filter.py}
+
+\subsection{Filtro Complementario (src/filters/complementary\_filter.py)}
+Implementación de un filtro complementario para fusión de sensores, útil para combinar señales de alta y baja frecuencia (ej. acelerómetro y giroscopio).
+\lstinputlisting[language=Python]{src/filters/complementary_filter.py}
+
 \end{document}
