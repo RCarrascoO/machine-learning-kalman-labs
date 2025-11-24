@@ -71,7 +71,7 @@ NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 \subsubsection{Configuración de Algoritmos}
 Se definen diccionarios con los hiperparámetros por defecto para los algoritmos. Esto permite cambiar la configuración en un solo lugar sin tocar la lógica de los modelos.
 \begin{lstlisting}[language=Python]
-# Configuración de KMeans
+# Configuracion de KMeans
 KMEANS_CONFIG = {
     "n_clusters": 3,
     "random_state": 42,
@@ -79,7 +79,7 @@ KMEANS_CONFIG = {
     "max_iter": 300,
 }
 
-# Configuración de MeanShift
+# Configuracion de MeanShift
 MEANSHIFT_CONFIG = {
     "bandwidth": "scott",
     "cluster_all": True,
@@ -217,7 +217,7 @@ Métodos auxiliares para interpretar el resultado en grados, que es más intuiti
 \begin{lstlisting}[language=Python]
     @staticmethod
     def angle_from_cosine_degrees(cos_theta):
-        # Asegura que el valor esté en [-1, 1]
+        # Asegura que el valor este en [-1, 1]
         cos_theta = np.clip(cos_theta, -1.0, 1.0)
         radians = np.arccos(cos_theta)
         return np.degrees(radians)
@@ -231,13 +231,13 @@ Estima el estado de un sistema dinámico lineal.
 Define las matrices clave del filtro: Transición ($F$), Medición ($H$), Covarianza ($P$) y Ruido del Proceso ($Q$).
 \begin{lstlisting}[language=Python]
     def __init__(self, dt=0.1, ...):
-        # Matriz de transición de estado (F)
+        # Matriz de transicion de estado (F)
         # x = x + v*dt
         # v = v
         self.F = np.array([[1, dt], [0, 1]])
         
-        # Matriz de medición (H)
-        # Solo medimos posición (1, 0)
+        # Matriz de medicion (H)
+        # Solo medimos posicion (1, 0)
         self.H = np.array([[1, 0]])
 \end{lstlisting}
 
@@ -248,7 +248,7 @@ El método \texttt{filter} itera sobre una lista de mediciones, ejecutando el ci
         estimates = []
         for z in measurements:
             self.predict()  # Proyectar estado al futuro
-            self.update(z)  # Corregir con nueva medición
+            self.update(z)  # Corregir con nueva medicion
             estimates.append(self.x[0, 0])
         return np.array(estimates)
 \end{lstlisting}
@@ -374,40 +374,7 @@ ax.scatter(puntos_3d[:,0], puntos_3d[:,1], puntos_3d[:,2])
 ax.scatter(centroid[0], centroid[1], centroid[2], c='red', s=100)
 \end{lstlisting}
 
-\newpage
-\section{Apéndice: Código Fuente Completo}
-A continuación se presenta el código fuente completo de todos los módulos implementados en el proyecto, con una breve descripción de su propósito.
 
-\subsection{Configuración (config.py)}
-Define las constantes globales, rutas de archivos y parámetros de configuración por defecto para todos los algoritmos.
-\lstinputlisting[language=Python]{src/../config.py}
 
-\subsection{Cargador de Datos (src/data\_loader.py)}
-Clase utilitaria encargada de cargar archivos \texttt{.npy} y transformarlos en estructuras de datos manejables como DataFrames de Pandas.
-\lstinputlisting[language=Python]{src/data_loader.py}
-
-\subsection{K-Means Model (src/clustering/kmeans\_model.py)}
-Implementación orientada a objetos del algoritmo K-Means, encapsulando la inicialización, entrenamiento y predicción de clusters.
-\lstinputlisting[language=Python]{src/clustering/kmeans_model.py}
-
-\subsection{MeanShift Model (src/clustering/meanshift\_model.py)}
-Implementación del algoritmo MeanShift que permite la detección automática de clusters basada en densidad, incluyendo la estimación de ancho de banda.
-\lstinputlisting[language=Python]{src/clustering/meanshift_model.py}
-
-\subsection{Regresión Lineal (src/regression/linear\_regression.py)}
-Modelo de regresión lineal simple para predecir variables continuas, incluyendo métodos para evaluación de métricas (MSE, R2).
-\lstinputlisting[language=Python]{src/regression/linear_regression.py}
-
-\subsection{Distancia Coseno (src/similarity/cosine\_distance.py)}
-Módulo con métodos estáticos para calcular la similitud coseno entre vectores y convertir los resultados a ángulos en grados.
-\lstinputlisting[language=Python]{src/similarity/cosine_distance.py}
-
-\subsection{Filtro de Kalman (src/filters/kalman\_filter.py)}
-Implementación de un filtro de Kalman unidimensional estándar, con métodos separados para las fases de predicción y actualización.
-\lstinputlisting[language=Python]{src/filters/kalman_filter.py}
-
-\subsection{Filtro Complementario (src/filters/complementary\_filter.py)}
-Implementación de un filtro complementario para fusión de sensores, útil para combinar señales de alta y baja frecuencia (ej. acelerómetro y giroscopio).
-\lstinputlisting[language=Python]{src/filters/complementary_filter.py}
 
 \end{document}
